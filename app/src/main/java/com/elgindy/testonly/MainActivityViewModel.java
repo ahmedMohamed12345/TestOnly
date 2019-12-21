@@ -3,6 +3,7 @@ package com.elgindy.testonly;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.database.DataSnapshot;
@@ -16,10 +17,19 @@ import java.util.List;
 
 public class MainActivityViewModel extends ViewModel {
     List<String> arrayList = new ArrayList<>();
-    DatabaseReference eventIdRef ;
+    DatabaseReference eventIdRef;
+
+    private MutableLiveData<List<String>> departmentNameData = new MutableLiveData<>();
 
 
-    public List<String> getArrayOfDepartmentName(){
+    public MutableLiveData<List<String>> getDepartmentName() {
+        getArrayOfDepartmentName();
+        departmentNameData.setValue(arrayList);
+        return departmentNameData;
+    }
+
+
+    public List<String> getArrayOfDepartmentName() {
         eventIdRef = FirebaseDatabase.getInstance().getReference().child("departments");
         eventIdRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -39,7 +49,7 @@ public class MainActivityViewModel extends ViewModel {
             }
         });
 
-        return arrayList ;
+        return arrayList;
     }
 
 

@@ -10,6 +10,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String MY_NATIONAL_ID = "MyNationalId";
 
 
-    MainActivityViewModel mainActivityViewModel = new MainActivityViewModel();
+    MainActivityViewModel mainActivityViewModel ;
 
 
     @Override
@@ -44,15 +47,26 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        mainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
 
-        arrayList = mainActivityViewModel.getArrayOfDepartmentName();
+        mainActivityViewModel.getDepartmentName();
+
+//        arrayList = mainActivityViewModel.getArrayOfDepartmentName();
+        LiveData<List<String>> count = mainActivityViewModel.getDepartmentName();
+        count.observe(this, new Observer<List<String>>() {
+            @Override
+            public void onChanged(List<String> list) {
+                adapter = new MyRecyclerViewAdapter(arrayList);
+
+                recyclerView.setAdapter(adapter);
+
+            }
+        });
+
 
         Log.d("CHECK", arrayList.size() + "");
 
 
-        adapter = new MyRecyclerViewAdapter(arrayList);
-
-        recyclerView.setAdapter(adapter);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
@@ -68,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
 
     private void putDesiresInDatabase() {
 
@@ -88,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0) {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -103,9 +117,6 @@ public class MainActivity extends AppCompatActivity {
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
         }
     };
-
-
-
 
 
 }
